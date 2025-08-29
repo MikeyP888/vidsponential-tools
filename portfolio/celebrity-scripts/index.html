@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael Pilgrim Scripts - Celebrity & Entertainment</title>
+    
+    <link rel="stylesheet" href="../../shared/styles/base.css">
+    <link rel="stylesheet" href="../../shared/styles/fonts.css">
+    <link rel="stylesheet" href="../../shared/styles/layout.css">
+    <link rel="stylesheet" href="../../shared/styles/buttons.css">
+    <link rel="stylesheet" href="../../shared/styles/notifications.css">
+    
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        
+        <!-- 1. Logo Container -->
+        <div class="logo-container">
+            <img src="../../shared/assets/vidsponential logo.png" alt="Vidsponential" class="logo">
+        </div>
+
+        <!-- 2. Page Headline Container -->
+        <div class="headline-container">
+            <h1 class="page-headline">Michael Pilgrim Scripts</h1>
+        </div>
+
+        <!-- 3. Page Title Container -->
+        <div class="title-container">
+            <h2 class="page-title">Portfolio: Celebrity & Entertainment Scripts</h2>
+        </div>
+
+        <!-- 4. Page Video Container -->
+        <div class="video-container">
+            <div class="video-placeholder">
+                <p>Video will be embedded here</p>
+                <small>(YouTube embed placeholder)</small>
+            </div>
+        </div>
+
+        <!-- 5. Portfolio Container -->
+        <div class="portfolio-container">
+            <div class="portfolio-inner">
+                <div class="scripts-grid" id="scriptsGrid">
+                    <div class="loading">Loading celebrity scripts...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. About Blurb Container -->
+        <div class="about-container">
+            <div class="about-inner">
+                <h3>Professional Script Writing Services</h3>
+                <p>With over 5 years of experience crafting high-converting YouTube scripts, I specialize in celebrity and entertainment content that captivates audiences and drives engagement. My scripts have generated millions of views across various channels.</p>
+                
+                <p>I understand the psychology behind viral content and know exactly what hooks viewers in the first 15 seconds. Whether you need scripts for celebrity gossip, entertainment news, or dramatic storytelling, I deliver content that keeps your audience watching until the very end.</p>
+                
+                <p>Every script comes with strategic pacing, compelling hooks, and clear calls-to-action designed to maximize your video's performance. Let me help you create content that not only entertains but converts viewers into loyal subscribers.</p>
+            </div>
+        </div>
+
+        <!-- 7. CTA Container -->
+        <div class="cta-container">
+            <div class="cta-inner">
+                <h3 class="cta-text">Find me on Upwork</h3>
+                <a href="#" class="upwork-button" target="_blank">View My Upwork Profile</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            © vidsponential
+        </footer>
+
+    </div>
+
+    <!-- PDF Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Script Preview</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <iframe id="pdfViewer" src="" width="100%" height="100%" frameborder="0" style="border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const SUPABASE_URL = 'https://euzbpslzrimyokzvgbzk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1emJwc2x6cmlteW9renZnYnprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NDk5MTUsImV4cCI6MjA2NjEyNTkxNX0.HBznM8FVX0VnYBN8rTu6T-QOPmq0d60syavTCADl3JI';
+
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allScripts = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Celebrity portfolio page loading...');
+            await loadCelebrityScripts();
+            setupModal();
+        });
+
+        // Fetch all niches
+        async function fetchNiches() {
+            try {
+                console.log('Fetching niches...');
+                const { data, error } = await supabaseClient
+                    .from('website_niches')
+                    .select('*');
+                
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+                console.log('Niches fetched:', data);
+                return { data, error: null };
+            } catch (error) {
+                console.error('Error fetching niches:', error);
+                return { data: null, error };
+            }
+        }
+
+        // Fetch scripts by niche
+        async function fetchScriptsByNiche(nicheId = null) {
+            try {
+                console.log('Fetching scripts for niche:', nicheId);
+                let query = supabaseClient
+                    .from('website_scripts')
+                    .select(`
+                        *,
+                        website_niches!website_niche_id(*)
+                    `)
+                    .eq('website_script_status_id', 2)
+                    .order('website_script_display_order');
+                
+                if (nicheId) {
+                    query = query.eq('website_niche_id', nicheId);
+                }
+                
+                const { data, error } = await query;
+                
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+                console.log('Scripts fetched:', data);
+                return { data, error: null };
+            } catch (error) {
+                console.error('Error fetching scripts:', error);
+                return { data: null, error };
+            }
+        }
+
+        // Load celebrity scripts specifically
+        async function loadCelebrityScripts() {
+            const scriptsGrid = document.getElementById('scriptsGrid');
+            scriptsGrid.innerHTML = '<div class="loading">Loading celebrity scripts...</div>';
+
+            try {
+                // First get the celebrity niche ID
+                console.log('Fetching niches for celebrity page...');
+                const { data: niches, error: nicheError } = await fetchNiches();
+                
+                if (nicheError) {
+                    console.error('Error loading niches:', nicheError);
+                    scriptsGrid.innerHTML = `
+                        <div class="no-scripts">
+                            <h3>Error loading celebrity niche</h3>
+                            <p>Database connection issue. Check console for details.</p>
+                            <p><strong>Error:</strong> ${nicheError.message}</p>
+                            <p><a href="add-dummy-data.html" style="color: #e91e63;">Try adding sample data first</a></p>
+                        </div>`;
+                    return;
+                }
+
+                console.log('Available niches:', niches);
+
+                if (!niches || niches.length === 0) {
+                    scriptsGrid.innerHTML = `
+                        <div class="no-scripts">
+                            <h3>No niches found in database</h3>
+                            <p>The database appears to be empty.</p>
+                            <p><a href="add-dummy-data.html" style="color: #e91e63;">Click here to add sample data</a></p>
+                        </div>`;
+                    return;
+                }
+
+                const celebrityNiche = niches.find(n => n.website_niche_slug === 'celebrity');
+                if (!celebrityNiche) {
+                    const availableNiches = niches.map(n => n.website_niche_slug).join(', ');
+                    scriptsGrid.innerHTML = `
+                        <div class="no-scripts">
+                            <h3>Celebrity niche not found</h3>
+                            <p>Available niches: ${availableNiches}</p>
+                            <p><a href="add-dummy-data.html" style="color: #e91e63;">Add sample data with celebrity niche</a></p>
+                        </div>`;
+                    return;
+                }
+
+                console.log('Found celebrity niche:', celebrityNiche);
+
+                // Load celebrity scripts
+                console.log('Fetching celebrity scripts...');
+                const { data: scripts, error } = await fetchScriptsByNiche(celebrityNiche.website_niche_id);
+                
+                if (error) {
+                    console.error('Error loading celebrity scripts:', error);
+                    scriptsGrid.innerHTML = `
+                        <div class="no-scripts">
+                            <h3>Error loading scripts</h3>
+                            <p><strong>Error:</strong> ${error.message}</p>
+                            <p>Check console for more details.</p>
+                        </div>`;
+                    return;
+                }
+
+                console.log('Celebrity scripts loaded:', scripts);
+                allScripts = scripts || [];
+                displayScripts(allScripts);
+
+            } catch (error) {
+                console.error('Unexpected error in loadCelebrityScripts:', error);
+                scriptsGrid.innerHTML = `
+                    <div class="no-scripts">
+                        <h3>Unexpected Error</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>Check browser console for more details.</p>
+                        <p><a href="add-dummy-data.html" style="color: #e91e63;">Try adding sample data</a></p>
+                    </div>`;
+            }
+        }
+
+        // Display scripts in grid
+        function displayScripts(scripts) {
+            const scriptsGrid = document.getElementById('scriptsGrid');
+            
+            if (!scripts || scripts.length === 0) {
+                scriptsGrid.innerHTML = `
+                    <div class="no-scripts">
+                        <h3>No celebrity scripts found</h3>
+                        <p>Scripts will appear here once added to the database.</p>
+                        <p><a href="add-dummy-data.html" style="color: #e91e63;">Click here to add sample data</a></p>
+                    </div>`;
+                return;
+            }
+
+            scriptsGrid.innerHTML = scripts.map(script => `
+                <div class="script-card">
+                    ${script.website_script_thumbnail_url ? 
+                        `<img src="${script.website_script_thumbnail_url}" alt="${script.website_script_title}" class="script-thumbnail" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                         <div class="script-thumbnail placeholder" style="display: none; align-items: center; justify-content: center; background: #f0f0f0; color: #666; height: 200px;">No Thumbnail</div>` :
+                        '<div class="script-thumbnail placeholder" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #666; height: 200px;">No Thumbnail</div>'
+                    }
+                    <div class="script-content">
+                        <h3 class="script-title">${script.website_script_title}</h3>
+                        ${script.website_script_subtitle ? 
+                            `<p class="script-subtitle">${script.website_script_subtitle}</p>` : 
+                            ''
+                        }
+                        ${script.website_script_description ? 
+                            `<p class="script-description">${truncateText(script.website_script_description, 120)}</p>` : 
+                            ''
+                        }
+                        <button class="view-pdf-btn" 
+                                data-pdf="${script.website_script_pdf_url}" 
+                                data-title="${script.website_script_title}"
+                                ${!script.website_script_pdf_url ? 'disabled' : ''}>
+                            ${script.website_script_pdf_url ? 'View Script' : 'PDF Not Available'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Reattach event listeners for PDF buttons
+            setupPDFButtons();
+        }
+
+        // Setup PDF modal functionality
+        function setupModal() {
+            const modal = document.getElementById('pdfModal');
+            const closeBtn = document.querySelector('.close');
+
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.getElementById('pdfViewer').src = '';
+            });
+
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.getElementById('pdfViewer').src = '';
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'block') {
+                    modal.style.display = 'none';
+                    document.getElementById('pdfViewer').src = '';
+                }
+            });
+        }
+
+        // Setup PDF button functionality
+        function setupPDFButtons() {
+            document.querySelectorAll('.view-pdf-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const pdfUrl = e.target.dataset.pdf;
+                    const title = e.target.dataset.title;
+                    
+                    if (!pdfUrl) return;
+
+                    document.getElementById('modalTitle').textContent = title;
+                    document.getElementById('pdfViewer').src = pdfUrl;
+                    document.getElementById('pdfModal').style.display = 'block';
+                });
+            });
+        }
+
+        // Utility function to truncate text
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            if (text.length <= maxLength) return text;
+            return text.substr(0, maxLength) + '...';
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. Logo Container */
+        .logo-container {
+            padding: 2rem 0 1rem 2rem;
+            background: white;
+        }
+
+        .logo {
+            height: 35px;
+            width: auto;
+        }
+
+        /* 2. Headline Container */
+        .headline-container {
+            background: white;
+            padding: 1rem 2rem;
+            text-align: center;
+        }
+
+        .page-headline {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        /* 3. Title Container */
+        .title-container {
+            background: white;
+            padding: 0.5rem 2rem 2rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .page-title {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: #e91e63;
+            margin: 0;
+        }
+
+        /* 4. Video Container */
+        .video-container {
+            background: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .video-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .video-placeholder p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-placeholder small {
+            color: #999;
+        }
+
+        /* 5. Portfolio Container */
+        .portfolio-container {
+            background: white;
+            padding: 4rem 0;
+            flex: 1;
+        }
+
+        .portfolio-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .scripts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .script-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .script-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .script-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            object-position: top center;
+            background: #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .script-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .script-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .script-subtitle {
+            font-size: 0.975rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .script-description {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            flex-grow: 1;
+        }
+
+        .view-pdf-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-top: auto;
+        }
+
+        .view-pdf-btn:hover {
+            background: #ad1457;
+        }
+
+        .view-pdf-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 6. About Container */
+        .about-container {
+            background: #f8f9fa;
+            padding: 4rem 0;
+        }
+
+        .about-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .about-inner h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .about-inner p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        /* 7. CTA Container */
+        .cta-container {
+            background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .cta-inner {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .cta-text {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .upwork-button {
+            display: inline-block;
+            background: white;
+            color: #e91e63;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .upwork-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Loading & No Scripts */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .no-scripts {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 0 auto;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 0;
+            flex-grow: 1;
+            display: flex;
+        }
+
+        /* Footer */
+        .site-footer {
+            text-align: center;
+            padding: 1rem 0;
+            color: #666;
+            font-size: 14px;
+            background: #333;
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .logo-container {
+                padding: 1rem;
+            }
+
+            .headline-container,
+            .title-container {
+                padding: 1rem;
+            }
+
+            .page-headline {
+                font-size: 1.8rem;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .video-container,
+            .portfolio-container,
+            .about-container,
+            .cta-container {
+                padding: 2rem 0;
+            }
+
+            .portfolio-inner,
+            .about-inner,
+            .cta-inner {
+                padding: 0 1rem;
+            }
+
+            .scripts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-inner h3 {
+                font-size: 1.5rem;
+            }
+
+            .cta-text {
+                font-size: 1.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                height: 85vh;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</body>
+</html>

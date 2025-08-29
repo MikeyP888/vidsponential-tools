@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Library Example</title>
+    
+    <!-- Base styles -->
+    <link rel="stylesheet" href="shared/styles/fonts.css">
+    <link rel="stylesheet" href="shared/styles/base.css">
+    <link rel="stylesheet" href="shared/styles/layout.css">
+    
+    <!-- Component styles -->
+    <link rel="stylesheet" href="shared/styles/components.css">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .demo-section:last-child {
+            border-bottom: none;
+        }
+        
+        .demo-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .demo-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .demo-example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .code-block {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 40px;">Vidsponential Design System Components</h1>
+        
+        <!-- Header with Logo and Navigation -->
+        <div class="demo-section">
+            <h2 class="demo-title">Header Example</h2>
+            <p class="demo-description">Demonstrates the logo and tab navigation components working together</p>
+            
+            <div class="demo-example">
+                <div class="top-bar">
+                    <div id="logo-container"></div>
+                    <div id="nav-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Single-Line Text Field -->
+        <div class="demo-section">
+            <h2 class="demo-title">1. Single-Line Text Field Component</h2>
+            <p class="demo-description">Used for chapter titles, headlines, and keywords</p>
+            
+            <div class="demo-example">
+                <div id="single-text-example"></div>
+            </div>
+            
+            <div class="code-block">
+const textField = ComponentLibrary.createSingleLineTextField({
+    label: 'Chapter Title:',
+    placeholder: 'Enter chapter title...',
+    id: 'chapterTitle',
+    dataAttributes: {
+        'chapter-id': '123'
+    }
+});
+            </div>
+        </div>
+
+        <!-- Multi-Line Text Field -->
+        <div class="demo-section">
+            <h2 class="demo-title">2. Multi-Line Text Field Component</h2>
+            <p class="demo-description">Used for chapter outlines with auto-resize functionality</p>
+            
+            <div class="demo-example">
+                <div id="multi-text-example"></div>
+            </div>
+            
+            <div class="code-block">
+const outlineField = ComponentLibrary.createMultiLineTextField({
+    label: 'Chapter Outline:',
+    placeholder: 'Enter detailed chapter outline...',
+    id: 'chapterOutline',
+    dataAttributes: {
+        'chapter-id': '123'
+    }
+});
+            </div>
+        </div>
+
+        <!-- Rating Field -->
+        <div class="demo-section">
+            <h2 class="demo-title">3. Rating Input Field Component</h2>
+            <p class="demo-description">Centered rating input for scoring content (1-100)</p>
+            
+            <div class="demo-example">
+                <div id="rating-example"></div>
+            </div>
+            
+            <div class="code-block">
+const ratingField = ComponentLibrary.createRatingField({
+    label: 'Rating / 100:',
+    id: 'contentRating',
+    dataAttributes: {
+        'field': 'content_rating'
+    }
+});
+            </div>
+        </div>
+
+        <!-- Form Row Layout -->
+        <div class="demo-section">
+            <h2 class="demo-title">4. Form Row Layout Component</h2>
+            <p class="demo-description">Combines text field and rating field in a horizontal layout</p>
+            
+            <div class="demo-example">
+                <div id="form-row-example"></div>
+            </div>
+            
+            <div class="code-block">
+const textField = ComponentLibrary.createSingleLineTextField({...});
+const ratingField = ComponentLibrary.createRatingField({...});
+const formRow = ComponentLibrary.createFormRow({ textField, ratingField });
+            </div>
+        </div>
+
+        <!-- Gradient Button -->
+        <div class="demo-section">
+            <h2 class="demo-title">5. Gradient Button Component</h2>
+            <p class="demo-description">Chapter number buttons with gradient styling</p>
+            
+            <div class="demo-example">
+                <div id="gradient-button-example"></div>
+            </div>
+            
+            <div class="code-block">
+const chapterButton = ComponentLibrary.createGradientButton({
+    text: 'CHAPTER 1',
+    onClick: () => console.log('Chapter 1 clicked'),
+    id: 'chapter1Btn'
+});
+            </div>
+        </div>
+
+        <!-- Section Container -->
+        <div class="demo-section">
+            <h2 class="demo-title">6. Section Container Component</h2>
+            <p class="demo-description">Consistent section background and spacing</p>
+            
+            <div class="demo-example">
+                <div id="section-example"></div>
+            </div>
+            
+            <div class="code-block">
+const section = ComponentLibrary.createSectionContainer([
+    gradientButton,
+    formRow.container
+]);
+            </div>
+        </div>
+
+        <!-- Complete Example -->
+        <div class="demo-section">
+            <h2 class="demo-title">Complete Chapter Example</h2>
+            <p class="demo-description">Shows how all components work together to create a chapter section</p>
+            
+            <div class="demo-example">
+                <div id="complete-example"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Component Library Script -->
+    <script src="shared/js/components.js"></script>
+    
+    <script>
+        // Initialize examples when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Logo Example
+            const logo = ComponentLibrary.createLogo();
+            document.getElementById('logo-container').appendChild(logo);
+            
+            // Navigation Example
+            const tabs = [
+                { label: 'Outlines', href: '#', active: true, status: '15', badgeId: 'outlinesBadge', badgeCount: 3 },
+                { label: 'Chapters', href: '#', active: false, status: '40', badgeId: 'chaptersBadge', badgeCount: 0 },
+                { label: 'Visuals', href: '#', active: false, status: '46', badgeId: 'visualsBadge', badgeCount: 5 }
+            ];
+            const navigation = ComponentLibrary.createTabNavigation(tabs);
+            document.getElementById('nav-container').appendChild(navigation);
+            
+            // Single-Line Text Field Example
+            const singleTextField = ComponentLibrary.createSingleLineTextField({
+                label: 'Chapter Title:',
+                placeholder: 'Enter chapter title...',
+                value: 'Introduction to Video Marketing',
+                id: 'chapterTitle',
+                dataAttributes: {
+                    'chapter-id': '123'
+                }
+            });
+            document.getElementById('single-text-example').appendChild(singleTextField.container);
+            
+            // Multi-Line Text Field Example
+            const multiTextField = ComponentLibrary.createMultiLineTextField({
+                label: 'Chapter Outline:',
+                placeholder: 'Enter detailed chapter outline...',
+                value: 'This chapter covers the fundamentals of video marketing including:\n• Understanding your audience\n• Creating compelling content\n• Distribution strategies\n• Measuring success',
+                id: 'chapterOutline',
+                dataAttributes: {
+                    'chapter-id': '123'
+                }
+            });
+            document.getElementById('multi-text-example').appendChild(multiTextField.container);
+            
+            // Rating Field Example
+            const ratingField = ComponentLibrary.createRatingField({
+                label: 'Rating / 100:',
+                value: '85',
+                id: 'contentRating',
+                dataAttributes: {
+                    'field': 'content_rating'
+                }
+            });
+            document.getElementById('rating-example').appendChild(ratingField.container);
+            
+            // Form Row Example
+            const rowTextField = ComponentLibrary.createSingleLineTextField({
+                label: 'Headline:',
+                placeholder: 'Enter headline...',
+                value: '10 Proven Video Marketing Strategies That Actually Work'
+            });
+            
+            const rowRatingField = ComponentLibrary.createRatingField({
+                label: 'Rating / 100:',
+                value: '92'
+            });
+            
+            const formRow = ComponentLibrary.createFormRow({
+                textField: rowTextField,
+                ratingField: rowRatingField
+            });
+            document.getElementById('form-row-example').appendChild(formRow.container);
+            
+            // Gradient Button Example
+            const gradientButton = ComponentLibrary.createGradientButton({
+                text: 'CHAPTER 1',
+                onClick: () => alert('Chapter 1 clicked!'),
+                id: 'chapter1Btn'
+            });
+            document.getElementById('gradient-button-example').appendChild(gradientButton);
+            
+            // Section Container Example
+            const exampleButton = ComponentLibrary.createGradientButton({
+                text: 'CHAPTER 2',
+                id: 'chapter2Btn'
+            });
+            
+            const exampleFormRow = ComponentLibrary.createFormRow({
+                textField: ComponentLibrary.createSingleLineTextField({
+                    label: 'Chapter Title:',
+                    value: 'Advanced Video Techniques'
+                }),
+                ratingField: ComponentLibrary.createRatingField({
+                    value: '78'
+                })
+            });
+            
+            const sectionContainer = ComponentLibrary.createSectionContainer([
+                exampleButton,
+                exampleFormRow.container
+            ]);
+            document.getElementById('section-example').appendChild(sectionContainer);
+            
+            // Complete Example
+            const completeChapterButton = ComponentLibrary.createGradientButton({
+                text: 'CHAPTER 3',
+                id: 'chapter3Btn'
+            });
+            
+            const completeTitleRow = ComponentLibrary.createFormRow({
+                textField: ComponentLibrary.createSingleLineTextField({
+                    label: 'Chapter Title:',
+                    value: 'Video Analytics and Performance Optimization'
+                }),
+                ratingField: ComponentLibrary.createRatingField({
+                    value: '88'
+                })
+            });
+            
+            const completeOutlineRow = ComponentLibrary.createFormRow({
+                textField: ComponentLibrary.createMultiLineTextField({
+                    label: 'Chapter Outline:',
+                    value: 'Deep dive into video analytics:\n• Key metrics to track\n• Tools and platforms\n• Optimization strategies\n• A/B testing for videos\n• ROI measurement'
+                }),
+                ratingField: ComponentLibrary.createRatingField({
+                    value: '91'
+                })
+            });
+            
+            const completeSection = ComponentLibrary.createSectionContainer([
+                completeChapterButton,
+                completeTitleRow.container,
+                completeOutlineRow.container
+            ]);
+            document.getElementById('complete-example').appendChild(completeSection);
+            
+            // Add some interactivity examples
+            setTimeout(() => {
+                // Simulate unsaved state
+                ComponentLibrary.markFieldUnsaved(singleTextField.input);
+                
+                // Update badge count
+                ComponentLibrary.updateNotificationBadge('chaptersBadge', 2);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
