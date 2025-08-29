@@ -1,0 +1,16 @@
+{
+  "name": "vidsponential-portfolio",
+  "version": "1.0.0",
+  "description": "Professional YouTube Script Writing Portfolio",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build.js",
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": ["portfolio", "youtube", "scripts", "writing"],
+  "author": "Michael Pilgrim",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

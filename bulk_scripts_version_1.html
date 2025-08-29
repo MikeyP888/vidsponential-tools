@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Title Selector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .script-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease;
+        }
+
+        .script-item:last-child {
+            border-bottom: none;
+        }
+
+        .script-title {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            margin-right: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .vote-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 60px;
+        }
+
+        .vote-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .vote-btn.yes {
+            color: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .vote-btn.no {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .vote-btn.selected.yes {
+            background-color: #22c55e;
+            color: white;
+            border-color: #22c55e;
+        }
+
+        .vote-btn.selected.no {
+            background-color: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .script-item.voted-yes {
+            background-color: #f0fdf4;
+        }
+
+        .script-item.voted-no {
+            background-color: #fef2f2;
+        }
+
+        .regenerate-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .regenerate-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">What Really Killed Nokia — And How They're Quietly Coming Back</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">Grey Goose: The $2 Billion Illusion That Rewrote Luxury</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">Why Costco Should've Failed But Became a $200B Giant Instead</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">The $4,500 Ad That Shattered Gillette's Empire</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">Jeep's Downfall: They Squeezed Customers and Lost Everything</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">How One Billionaire Took Down Herbalife's Global Pyramid</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+
+        <div class="script-item">
+            <div class="script-title">BlackRock's Dark Power: What They Don't Want You To Know</div>
+            <div class="button-group">
+                <button class="vote-btn yes" onclick="vote(this, 'yes')">Yes</button>
+                <button class="vote-btn no" onclick="vote(this, 'no')">No</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="regenerate-btn">Regenerate</button>
+
+    <script>
+        function vote(button, choice) {
+            const scriptItem = button.closest('.script-item');
+            const buttons = scriptItem.querySelectorAll('.vote-btn');
+            
+            // Remove previous selections
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            scriptItem.classList.remove('voted-yes', 'voted-no');
+            
+            // Add new selection
+            button.classList.add('selected');
+            if (choice === 'yes') {
+                scriptItem.classList.add('voted-yes');
+            } else {
+                scriptItem.classList.add('voted-no');
+            }
+        }
+    </script>
+</body>
+</html>
