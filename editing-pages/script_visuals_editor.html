@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Suggestions Editor</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍎</text></svg>">
+    
+    <link rel="stylesheet" href="../shared/styles/fonts.css">
+    <link rel="stylesheet" href="../shared/styles/components.css">
+    <link rel="stylesheet" href="../shared/styles/base.css">
+    <link rel="stylesheet" href="../shared/styles/layout.css">
+    <link rel="stylesheet" href="../shared/styles/buttons.css">
+    <link rel="stylesheet" href="../shared/styles/forms.css">
+    <link rel="stylesheet" href="../shared/styles/status.css">
+    <link rel="stylesheet" href="../shared/styles/notifications.css">
+    <link rel="stylesheet" href="../shared/styles/script_editor_styles.css">
+    <link rel="stylesheet" href="../shared/styles/missing-layout.css">
+    <link rel="stylesheet" href="../shared/styles/navigation.css">
+    <link rel="stylesheet" href="../shared/styles/sidebar.css">
+
+    <style>
+        /* ================================================= */
+        /*              VISUALS EDITOR STYLES               */
+        /* ================================================= */
+
+        /* Chapter Section Styling - like research page */
+        .chapter-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+
+        /* Column Headers */
+        .beats-headers {
+            display: flex;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .beats-header-left {
+            width: calc(50% - 55px);
+            font-size: 11px;
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-left: 15px;
+        }
+
+        .beats-header-right {
+            width: calc(50% - 55px);
+            font-size: 11px;
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-left: 0px; /* Aligned with text content inside field */
+        }
+
+        /* Beat Row Layout */
+        .beat-row {
+            margin-bottom: 10px;
+        }
+
+        .beat-columns {
+            display: flex;
+            gap: 10px;
+            align-items: stretch; /* Make all columns same height */
+        }
+
+        /* Two-Column Layout */
+        .beat-column-left {
+            width: calc(50% - 55px);
+            display: flex;
+        }
+
+        .beat-column-right {
+            width: calc(50% - 55px);
+            display: flex;
+        }
+
+        .beat-rating {
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Text field containers - stretch to match height */
+        .text-field-single {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .text-field-single__container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Auto-expanding text fields with top-left alignment */
+        .beat-script-input,
+        .beat-visual-input {
+            font-family: "Tahoma", sans-serif !important;
+            font-size: 19px !important;
+            font-weight: 400 !important;
+            line-height: 1.6 !important;
+            width: 100%;
+            min-height: 59px; /* Match rating field container height */
+            height: 100%; /* Fill container height */
+            resize: none;
+            overflow: hidden;
+            vertical-align: top;
+            padding: 15px !important;
+            white-space: pre-wrap; /* Allow text wrapping */
+            word-wrap: break-word;
+            box-sizing: border-box;
+        }
+        
+        /* Rating field container matches text field height */
+        .rating-field__container {
+            min-height: 59px;
+            height: 100%;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* Rating field with proper label */
+        .beat-rating-label {
+            font-size: 11px;
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-bottom: 3px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body class="has-sidebar">
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+    
+    <div class="container with-sidebar">
+        <!-- =============================================== -->
+        <!--                 HEADER SECTION                -->
+        <!-- =============================================== -->
+        <div class="header">
+            
+            <!-- Second horizontal container: Status Indicator -->
+            <div class="status-bar">
+                <div class="status-indicator" id="statusIndicator">Loading</div>
+            </div>
+            
+            <!-- Third horizontal container: Scripts Completed Today -->
+            <div class="completed-today-bar">
+                <div class="completed-today-text">Script Visuals Completed Today: <span id="visualsCompletedTodayCount">0</span></div>
+            </div>
+            
+            <!-- Fourth horizontal container: Overall Scripts Completed Today -->
+            <div class="completed-today-bar">
+                <div class="completed-today-text">Scripts Completed Today: <span id="scriptsCompletedTodayCount">0</span></div>
+            </div>
+            
+            <!-- Page Title -->
+            <h1 class="page-title">Visual Suggestions Editor</h1>
+        </div>
+
+        <!-- =============================================== -->
+        <!--                 MAIN CONTENT                  -->
+        <!-- =============================================== -->
+        <div id="content">
+            <!-- Script Info Section -->
+            <div class="info-section">
+                <div class="script-info" id="scriptInfo" style="display: none;">
+                    <div class="info-item">
+                        <div class="info-label">Script ID</div>
+                        <div class="info-value" id="scriptIdValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Words</div>
+                        <div class="info-value" id="wordsValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Client</div>
+                        <div class="info-value" id="clientValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Channel</div>
+                        <div class="info-value" id="channelValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Type</div>
+                        <div class="info-value" id="typeValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Genre</div>
+                        <div class="info-value" id="genreValue">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Suggestions Section -->
+            <div class="visuals-section">
+                <div id="visualsList"></div>
+            </div>
+        </div>
+
+        <!-- =============================================== -->
+        <!--                 NO SCRIPTS MESSAGE            -->
+        <!-- =============================================== -->
+        <div id="noScriptsMessage" class="message" style="display: none;">
+            No script visuals to display - everything checked ✓
+        </div>
+
+        <!-- =============================================== -->
+        <!--                BOTTOM CONTROLS                 -->
+        <!-- =============================================== -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="navigation-controls">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="navigateScript(-1)">← Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="navigateScript(1)">Next →</button>
+                </div>
+                <div>
+                    <div class="auto-save-indicator" id="autoSaveStatus">Auto-save: Ready</div>
+                </div>
+                <div>
+                    <button class="btn btn-success" id="saveBtn" onclick="saveScript()">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the visuals app JavaScript -->
+    <script>
+        console.log('Starting to load visuals app...');
+    </script>
+    <script src="../shared/js/visuals-app.js"></script>
+    <script>
+        console.log('Visuals app script tag processed');
+    </script>
+    
+    <script type="module" src="../shared/js/sidebar-component.js"></script>
+</body>
+</html>

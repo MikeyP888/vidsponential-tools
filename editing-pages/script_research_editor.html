@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Research Editor</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍎</text></svg>">
+    
+    <link rel="stylesheet" href="../shared/styles/fonts.css">
+    <link rel="stylesheet" href="../shared/styles/components.css">
+    <link rel="stylesheet" href="../shared/styles/base.css">
+    <link rel="stylesheet" href="../shared/styles/layout.css">
+    <link rel="stylesheet" href="../shared/styles/buttons.css">
+    <link rel="stylesheet" href="../shared/styles/forms.css">
+    <link rel="stylesheet" href="../shared/styles/status.css">
+    <link rel="stylesheet" href="../shared/styles/notifications.css">
+    <link rel="stylesheet" href="../shared/styles/script_editor_styles.css">
+    <link rel="stylesheet" href="../shared/styles/missing-layout.css">
+    <link rel="stylesheet" href="../shared/styles/navigation.css">
+    <link rel="stylesheet" href="../shared/styles/sidebar.css">
+</head>
+<body class="has-sidebar">
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+    
+    <div class="container with-sidebar">
+        <!-- =============================================== -->
+        <!--                 HEADER SECTION                -->
+        <!-- =============================================== -->
+        <div class="header">
+            
+            <!-- Second horizontal container: Status Indicator -->
+            <div class="status-bar">
+                <div class="status-indicator" id="statusIndicator">Loading</div>
+            </div>
+            
+            <!-- Third horizontal container: Scripts Completed Today -->
+            <div class="completed-today-bar">
+                <div class="completed-today-text">Script Research Completed Today: <span id="researchCompletedTodayCount">0</span></div>
+            </div>
+            
+            <!-- Fourth horizontal container: Overall Scripts Completed Today -->
+            <div class="completed-today-bar">
+                <div class="completed-today-text">Scripts Completed Today: <span id="scriptsCompletedTodayCount">0</span></div>
+            </div>
+            
+            <!-- Page Title -->
+            <h1 class="page-title">Script Research Editor</h1>
+        </div>
+
+        <!-- =============================================== -->
+        <!--                 MAIN CONTENT                  -->
+        <!-- =============================================== -->
+        <div id="content">
+            <!-- Script Info Section -->
+            <div class="info-section">
+                <div class="script-info" id="scriptInfo" style="display: none;">
+                    <div class="info-item">
+                        <div class="info-label">Script ID</div>
+                        <div class="info-value" id="scriptIdValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Words</div>
+                        <div class="info-value" id="wordsValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Client</div>
+                        <div class="info-value" id="clientValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Channel</div>
+                        <div class="info-value" id="channelValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Type</div>
+                        <div class="info-value" id="typeValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Genre</div>
+                        <div class="info-value" id="genreValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Subgenre</div>
+                        <div class="info-value" id="subgenreValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Format</div>
+                        <div class="info-value" id="formatValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Structure</div>
+                        <div class="info-value" id="structureValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Research Depth</div>
+                        <div class="info-value" id="researchValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Tone</div>
+                        <div class="info-value" id="toneValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Angle</div>
+                        <div class="info-value" id="angleValue">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research Content Section -->
+            <div class="research-section">
+                <div id="researchList">
+                    <!-- Research fields will be populated here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- No Scripts Message -->
+        <div id="noScriptsMessage" class="message" style="display: none;"></div>
+
+        <!-- =============================================== -->
+        <!--                BOTTOM CONTROLS                 -->
+        <!-- =============================================== -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="navigation-controls">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="navigateScript(-1)">← Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="navigateScript(1)">Next →</button>
+                </div>
+                <div>
+                    <div class="auto-save-indicator" id="autoSaveStatus">Auto-save: Ready</div>
+                </div>
+                <div>
+                    <button class="btn btn-success" id="saveBtn" onclick="saveScript()">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../shared/js/sidebar-component.js"></script>
+    <script>
+        // Research Editor Application
+        
+        // Configuration
+        const SUPABASE_URL = 'https://euzbpslzrimyokzvgbzk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1emJwc2x6cmlteW9renZnYnprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NDk5MTUsImV4cCI6MjA2NjEyNTkxNX0.HBznM8FVX0VnYBN8rTu6T-QOPmq0d60syavTCADl3JI';
+        
+        // Application state
+        let currentScriptData = null;
+        let scriptsToReview = [];
+        let currentScriptIndex = 0;
+        let autoSaveTimer = null;
+        let isLoading = false;
+        let hasUnsavedChanges = false;
+
+        // Research fields configuration
+        const RESEARCH_FIELDS = [
+            { name: 'story_summary', label: 'STORY SUMMARY' },
+            { name: 'research_dossier', label: 'RESEARCH DOSSIER' },
+            { name: 'timeline', label: 'TIMELINE' },
+            { name: 'key_players', label: 'KEY PLAYERS' },
+            { name: 'quotes', label: 'QUOTES' },
+            { name: 'dramatic_elements', label: 'DRAMATIC ELEMENTS' },
+            { name: 'sources', label: 'SOURCES' }
+        ];
+
+        // Initialize the application
+        async function init() {
+            try {
+                console.log('=== RESEARCH EDITOR DEBUG: Starting initialization ===');
+                updateStatus('loading', 'Loading scripts...');
+                
+                // Load scripts with status_id = 12 (ready for research)
+                const scripts = await loadScriptsToReview();
+                console.log('Loaded research scripts:', scripts);
+                
+                scriptsToReview = scripts;
+                
+                if (scripts.length > 0) {
+                    console.log('Loading first script with ID:', scripts[0].script_id);
+                    await loadCurrentScriptData();
+                    setupEventListeners();
+                    startAutoSave();
+                } else {
+                    showNoScriptsMessage();
+                }
+            } catch (error) {
+                console.error('Initialization error:', error);
+                handleInitializationError(error);
+            }
+        }
+
+        // Load scripts that need research (status 12)
+        async function loadScriptsToReview() {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/scripts?script_status_id=eq.12&select=script_id,script_headline`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to load scripts: ${response.status} - ${errorText}`);
+            }
+
+            return await response.json();
+        }
+
+        // Load current script data and research
+        async function loadCurrentScriptData() {
+            if (scriptsToReview.length === 0) {
+                showNoScriptsMessage();
+                return;
+            }
+
+            const scriptId = scriptsToReview[currentScriptIndex].script_id;
+            console.log('Loading research data for script ID:', scriptId);
+            
+            try {
+                updateStatus('loading', 'Loading script data...');
+                
+                // Load script info and research data
+                const [scriptInfo, researchData] = await Promise.all([
+                    loadScriptInfo(scriptId),
+                    loadResearchData(scriptId)
+                ]);
+                
+                currentScriptData = { script: scriptInfo, research: researchData };
+                console.log('Loaded script data:', currentScriptData);
+                
+                displayScriptData(currentScriptData);
+                updateNavigationButtons();
+                updateStatus('saved', 'Loaded successfully');
+                hasUnsavedChanges = false;
+            } catch (error) {
+                console.error('Error loading script:', error);
+                updateStatus('error', 'Failed to load script data');
+            }
+        }
+
+        // Load script information
+        async function loadScriptInfo(scriptId) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/scripts?script_id=eq.${scriptId}&select=*`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load script info');
+            }
+
+            const data = await response.json();
+            return data[0];
+        }
+
+        // Load research data
+        async function loadResearchData(scriptId) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/script_research?script_id=eq.${scriptId}&select=*`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load research data');
+            }
+
+            const data = await response.json();
+            return data[0] || {}; // Return empty object if no research data exists yet
+        }
+
+        // Display script data in UI
+        function displayScriptData(data) {
+            if (!data) return;
+
+            document.getElementById('content').style.display = 'block';
+            document.getElementById('noScriptsMessage').style.display = 'none';
+            document.getElementById('scriptInfo').style.display = 'grid';
+
+            // Update script info
+            document.getElementById('scriptIdValue').textContent = data.script.script_id;
+            document.getElementById('wordsValue').textContent = data.script.target_word_count || '-';
+            
+            // Display research fields
+            displayResearchFields(data.research);
+        }
+
+        // Display research fields
+        function displayResearchFields(researchData) {
+            const container = document.getElementById('researchList');
+            container.innerHTML = '';
+
+            RESEARCH_FIELDS.forEach(field => {
+                const fieldSection = document.createElement('div');
+                fieldSection.className = 'chapter-se-7a2807fb2c0d'; // Reuse existing styling
+                
+                fieldSection.innerHTML = `
+                    <!-- Field Label Button -->
+                    <button class="gradient-button">
+                        <span class="gradient-button__text">${field.label}</span>
+                    </button>
+                    
+                    <!-- Field Content Row -->
+                    <div class="form-row">
+                        <div class="form-row__text-field">
+                            <div class="text-field-multi">
+                                <div class="text-field-multi__container">
+                                    <textarea class="text-field-multi__input" 
+                                             id="research_${field.name}" 
+                                             data-field="${field.name}"
+                                             placeholder="Enter ${field.label.toLowerCase()}...">${researchData[field.name] || ''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row__rating-field">
+                            <div class="rating-field">
+                                <label class="rating-field__label">Rating / 100:</label>
+                                <div class="rating-field__container">
+                                    <input type="number" 
+                                           class="rating-field__input" 
+                                           id="rating_${field.name}"
+                                           data-field="${field.name}_rating"
+                                           min="1" 
+                                           max="100" 
+                                           value="${researchData[field.name + '_rating'] || ''}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(fieldSection);
+            });
+        }
+
+        // Save script function
+        async function saveScript() {
+            if (isLoading) return;
+            
+            try {
+                isLoading = true;
+                updateStatus('loading', 'Saving research data...');
+                
+                const scriptId = scriptsToReview[currentScriptIndex].script_id;
+                const researchData = collectResearchData();
+                
+                await saveResearchData(scriptId, researchData);
+                
+                updateStatus('saved', 'Research saved successfully');
+                hasUnsavedChanges = false;
+                
+                // Move to next script or show completion
+                if (currentScriptIndex < scriptsToReview.length - 1) {
+                    currentScriptIndex++;
+                    await loadCurrentScriptData();
+                } else {
+                    updateStatus('completed', 'All research completed!');
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                updateStatus('error', 'Failed to save research data');
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // Collect research data from form
+        function collectResearchData() {
+            const data = {};
+            
+            RESEARCH_FIELDS.forEach(field => {
+                const textField = document.getElementById(`research_${field.name}`);
+                const ratingField = document.getElementById(`rating_${field.name}`);
+                
+                if (textField) data[field.name] = textField.value;
+                if (ratingField && ratingField.value) data[field.name + '_rating'] = parseInt(ratingField.value);
+            });
+            
+            return data;
+        }
+
+        // Save research data to Supabase
+        async function saveResearchData(scriptId, data) {
+            const dataWithScript = { ...data, script_id: scriptId };
+            
+            // Try to update first, then insert if no record exists
+            let response = await fetch(`${SUPABASE_URL}/rest/v1/script_research?script_id=eq.${scriptId}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify(dataWithScript)
+            });
+
+            if (!response.ok) {
+                // If update failed, try insert
+                response = await fetch(`${SUPABASE_URL}/rest/v1/script_research`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(dataWithScript)
+                });
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to save research data');
+            }
+
+            return await response.json();
+        }
+
+        // Navigate between scripts
+        async function navigateScript(direction) {
+            if (isLoading) return;
+
+            if (hasUnsavedChanges) {
+                if (!confirm('You have unsaved changes. Do you want to continue without saving?')) {
+                    return;
+                }
+            }
+
+            const newIndex = currentScriptIndex + direction;
+            if (newIndex >= 0 && newIndex < scriptsToReview.length) {
+                currentScriptIndex = newIndex;
+                await loadCurrentScriptData();
+            }
+        }
+
+        // Update navigation button states
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentScriptIndex === 0;
+            nextBtn.disabled = currentScriptIndex === scriptsToReview.length - 1;
+            
+            prevBtn.className = prevBtn.disabled ? 'btn btn-secondary disabled' : 'btn btn-secondary';
+            nextBtn.className = nextBtn.disabled ? 'btn btn-secondary disabled' : 'btn btn-secondary';
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Add change listeners to mark unsaved changes
+            RESEARCH_FIELDS.forEach(field => {
+                const textField = document.getElementById(`research_${field.name}`);
+                const ratingField = document.getElementById(`rating_${field.name}`);
+                
+                if (textField) {
+                    textField.addEventListener('input', () => {
+                        hasUnsavedChanges = true;
+                        updateStatus('unsaved', 'Unsaved changes');
+                    });
+                }
+                
+                if (ratingField) {
+                    ratingField.addEventListener('input', () => {
+                        hasUnsavedChanges = true;
+                        updateStatus('unsaved', 'Unsaved changes');
+                    });
+                }
+            });
+        }
+
+        // Auto-save functionality
+        function startAutoSave() {
+            autoSaveTimer = setInterval(async () => {
+                if (hasUnsavedChanges && !isLoading) {
+                    try {
+                        const scriptId = scriptsToReview[currentScriptIndex].script_id;
+                        const researchData = collectResearchData();
+                        await saveResearchData(scriptId, researchData);
+                        hasUnsavedChanges = false;
+                        
+                        const autoSaveStatus = document.getElementById('autoSaveStatus');
+                        if (autoSaveStatus) {
+                            autoSaveStatus.textContent = 'Auto-save: Saved';
+                            setTimeout(() => {
+                                autoSaveStatus.textContent = 'Auto-save: Ready';
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        console.error('Auto-save failed:', error);
+                        const autoSaveStatus = document.getElementById('autoSaveStatus');
+                        if (autoSaveStatus) {
+                            autoSaveStatus.textContent = 'Auto-save: Failed';
+                        }
+                    }
+                }
+            }, 30000); // Auto-save every 30 seconds
+        }
+
+        // Utility functions
+        function updateStatus(status, message) {
+            const statusIndicator = document.getElementById('statusIndicator');
+            if (statusIndicator) {
+                statusIndicator.textContent = message;
+                statusIndicator.className = `status-indicator ${status}`;
+            }
+        }
+
+        function showNoScriptsMessage() {
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('noScriptsMessage').style.display = 'block';
+            document.getElementById('noScriptsMessage').innerHTML = `
+                <div class="message info">
+                    <strong>No scripts found</strong><br>
+                    There are no scripts ready for research (status_id = 12) at this time.
+                </div>
+            `;
+        }
+
+        function handleInitializationError(error) {
+            updateStatus('error', `Failed to load scripts: ${error.message}`);
+            
+            document.getElementById('noScriptsMessage').innerHTML = `
+                <div class="message error">
+                    <strong>Error loading scripts:</strong><br>
+                    ${error.message}<br><br>
+                    <small>Check the browser console (F12) for more details.</small>
+                </div>
+            `;
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('noScriptsMessage').style.display = 'block';
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, starting Research Editor initialization...');
+            init().catch(error => {
+                console.error('Failed to initialize Research Editor:', error);
+            });
+        });
+
+        // Make functions available globally for HTML onclick handlers
+        window.saveScript = saveScript;
+        window.navigateScript = navigateScript;
+    </script>
+</body>
+</html>

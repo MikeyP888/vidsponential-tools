@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Outline Editor</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍎</text></svg>">
+    
+    <link rel="stylesheet" href="../shared/styles/fonts.css">
+    <link rel="stylesheet" href="../shared/styles/components.css">
+    <link rel="stylesheet" href="../shared/styles/base.css">
+    <link rel="stylesheet" href="../shared/styles/layout.css">
+    <link rel="stylesheet" href="../shared/styles/buttons.css">
+    <link rel="stylesheet" href="../shared/styles/forms.css">
+    <link rel="stylesheet" href="../shared/styles/status.css">
+    <link rel="stylesheet" href="../shared/styles/notifications.css">
+    <link rel="stylesheet" href="../shared/styles/script_editor_styles.css">
+    <link rel="stylesheet" href="../shared/styles/missing-layout.css">
+    <link rel="stylesheet" href="../shared/styles/navigation.css">
+    <link rel="stylesheet" href="../shared/styles/sidebar.css">
+</head>
+<body class="has-sidebar">
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+    
+    <div class="container with-sidebar">
+        <!-- =============================================== -->
+        <!--                 HEADER SECTION                -->
+        <!-- =============================================== -->
+        <div class="header">
+            
+            <!-- Second horizontal container: Status Indicator -->
+            <div class="status-bar">
+                <div class="status-indicator" id="statusIndicator">Loading</div>
+            </div>
+            
+            <!-- Third horizontal container: Scripts Completed Today -->
+            <div class="completed-today-bar">
+                <div class="completed-today-text">Script Outlines Completed Today: <span id="outlinesCompletedTodayCount">0</span></div>
+            </div>
+            
+            <!-- Fourth horizontal container: Overall Scripts Completed Today -->
+            <div class="completed-today-bar">
+                <div class="completed-today-text">Scripts Completed Today: <span id="scriptsCompletedTodayCount">0</span></div>
+            </div>
+            
+            <!-- Page Title -->
+            <h1 class="page-title">Script Outline Editor</h1>
+        </div>
+
+        <!-- =============================================== -->
+        <!--                 MAIN CONTENT                  -->
+        <!-- =============================================== -->
+        <div id="content">
+            <!-- Script Info Section -->
+            <div class="info-section">
+                <div class="script-info" id="scriptInfo" style="display: none;">
+                    <div class="info-item">
+                        <div class="info-label">Script ID</div>
+                        <div class="info-value" id="scriptIdValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Words</div>
+                        <div class="info-value" id="wordsValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Client</div>
+                        <div class="info-value" id="clientValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Channel</div>
+                        <div class="info-value" id="channelValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Type</div>
+                        <div class="info-value" id="typeValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Genre</div>
+                        <div class="info-value" id="genreValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Subgenre</div>
+                        <div class="info-value" id="subgenreValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Format</div>
+                        <div class="info-value" id="formatValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Structure</div>
+                        <div class="info-value" id="structureValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Research Depth</div>
+                        <div class="info-value" id="researchValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Tone</div>
+                        <div class="info-value" id="toneValue">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Angle</div>
+                        <div class="info-value" id="angleValue">-</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Working Headline and Primary Keyword Fields -->
+            <div class="main-fields">
+                <!-- Working Headline Section -->
+                <div class="headline-options">
+                    <h2 class="section-title">Headline</h2>
+                    <div class="chapter-se-7a2807fb2c0d">
+                        <!-- Working Headline Row -->
+                        <div class="ch-title-7a2807fb2c0f">
+                            <!-- Headline Text + Label -->
+                            <div class="title-la-7a2807fb2c1a">
+                                <label class="label-ch-7a2807fb2c1f">Headline:</label>
+                                <div class="title-fiel-7a2807fb2c1e">
+                                    <textarea class="chapter-ti-7a2807fb2c20" id="workingHeadline" placeholder="Enter the working headline..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Headline Rating + Label -->
+                            <div class="title-rating-l-7a2807fb2c19">
+                                <label class="label-rat-7a2807fb2c1c">Rating / 100:</label>
+                                <div class="rating-fie-7a2807fb2c1b">
+                                    <input type="number" class="rating-7a2807fb2c1d" id="workingHeadlineRating" data-field="script_headline_mp_rating" min="1" max="100" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Primary Keyword Section -->
+                <div class="headline-options">
+                    <h2 class="section-title">Primary Keyword</h2>
+                    <div class="chapter-se-7a2807fb2c0d">
+                        <!-- Primary Keyword Row -->
+                        <div class="ch-title-7a2807fb2c0f">
+                            <!-- Keyword Text + Label -->
+                            <div class="title-la-7a2807fb2c1a">
+                                <label class="label-ch-7a2807fb2c1f">Primary Keyword:</label>
+                                <div class="title-fiel-7a2807fb2c1e">
+                                    <input type="text" class="chapter-ti-7a2807fb2c20" id="primaryKeyword" placeholder="Enter the primary keyword...">
+                                </div>
+                            </div>
+                            
+                            <!-- Keyword Rating + Label -->
+                            <div class="title-rating-l-7a2807fb2c19">
+                                <label class="label-rat-7a2807fb2c1c">Rating / 100:</label>
+                                <div class="rating-fie-7a2807fb2c1b">
+                                    <input type="number" class="rating-7a2807fb2c1d" id="primaryKeywordRating" data-field="primary_keyword_mp_rating" min="1" max="100" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Headline Options Section -->
+            <div class="headline-options">
+                <h2 class="section-title">Headline Options</h2>
+                <div id="headlinesList"></div>
+            </div>
+
+            <!-- Chapter Outlines Section -->
+            <div class="chapters-section">
+                <h2 class="section-title">Chapter Outlines</h2>
+                <div id="chaptersList"></div>
+            </div>
+        </div>
+
+        <!-- =============================================== -->
+        <!--                 NO SCRIPTS MESSAGE            -->
+        <!-- =============================================== -->
+        <div id="noScriptsMessage" class="message" style="display: none;">
+            No script outlines to display - everything checked ✓
+        </div>
+
+        <!-- =============================================== -->
+        <!--                BOTTOM CONTROLS                 -->
+        <!-- =============================================== -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="navigation-controls">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="navigateScript(-1)">← Previous</button>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="navigateScript(1)">Next →</button>
+                </div>
+                <div>
+                    <div class="auto-save-indicator" id="autoSaveStatus">Auto-save: Ready</div>
+                </div>
+                <div>
+                    <button class="btn btn-success" id="saveBtn" onclick="saveScript()">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../shared/js/sidebar-component.js"></script>
+    <script type="module" src="../shared/js/app.js"></script>
+</body>
+</html>
